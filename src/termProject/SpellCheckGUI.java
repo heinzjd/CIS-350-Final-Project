@@ -1,5 +1,6 @@
 package termProject;
 
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -10,7 +11,8 @@ import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JTextField;
+import javax.swing.JList;
+import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
 /***********************************************************************
@@ -33,12 +35,19 @@ public class SpellCheckGUI extends JFrame implements ActionListener
 	/** Label for total misspelled and where to enter text */
 	JLabel totalLabel, textLabel;
 	
-	/** Fields for quarters, dimes, nickels, and pennies */
+	/** Field for text */
 	JTextArea textArea;
 
 	/** String for total */
 	String total;
+	
+	/** JList for misspelled words */
+	JList<String> incorrectWords;
+	
+	/** String array to put in JList */
+	String[] words = new String[1000];
 
+	
 	/********************************************************************
 	 * Main Method
 	 ****************************************************************/ 
@@ -58,13 +67,16 @@ public class SpellCheckGUI extends JFrame implements ActionListener
 	{
 		englishCheck = new EnglishSpellCheck();
 
-		total = Double.toString(englishCheck.getMisspelled());
+		total = Integer.toString(englishCheck.getAmount());
 
 		setLayout(new GridBagLayout());
 		GridBagConstraints loc;
 
 
+		loc = new GridBagConstraints();
+
 		textArea = new JTextArea(10,100);
+		incorrectWords = new JList<String>();
 		loc.insets = new Insets(4, 4, 4, 4);
 
 		loc = new GridBagConstraints();
@@ -95,6 +107,15 @@ public class SpellCheckGUI extends JFrame implements ActionListener
 		loc.insets.bottom = 20;
 		add(totalLabel = new JLabel(total),loc);
 		
+		JScrollPane listScroller = new JScrollPane(incorrectWords);
+		listScroller.setPreferredSize(new Dimension(250, 80));
+		
+		loc = new GridBagConstraints();
+		loc.gridx = 1;
+		loc.gridy = 3;
+		loc.insets = new Insets(4, 4, 4, 4);
+		add(listScroller, loc);
+		
 		check.addActionListener(this);      
 	}
 	/*****************************************************************
@@ -117,11 +138,17 @@ public class SpellCheckGUI extends JFrame implements ActionListener
 	{
 		String t = textArea.getText();
 
-		englishCheck.check(t);
+		englishCheck.setText(t);
 
-		total = Double.toString(englishCheck.getAmount());
+		total = Integer.toString(englishCheck.getAmount());
+		
+		words = englishCheck.getMisspelled();
+				
+		incorrectWords.setListData(words);
 		
 		totalLabel.setText(total);
+		
+		
 	}
 
 }
