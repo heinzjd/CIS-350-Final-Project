@@ -74,6 +74,7 @@ public class EnglishSpellCheck
 			if(flag)
 			{
 				temp.add(input[i]);
+
 				counter++;
 			}
 			flag = true;

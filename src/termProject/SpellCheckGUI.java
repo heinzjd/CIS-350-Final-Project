@@ -75,7 +75,7 @@ public class SpellCheckGUI extends JFrame implements ActionListener
 
 		loc = new GridBagConstraints();
 
-		textArea = new JTextArea(10,100);
+		textArea = new JTextArea(20,100);
 		incorrectWords = new JList<String>();
 		loc.insets = new Insets(4, 4, 4, 4);
 
