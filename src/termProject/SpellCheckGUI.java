@@ -139,12 +139,12 @@ public class SpellCheckGUI extends JFrame implements ActionListener
 		String t = textArea.getText();
 
 		englishCheck.setText(t);
-
-		total = Integer.toString(englishCheck.getAmount());
 		
 		words = englishCheck.getMisspelled();
 				
 		incorrectWords.setListData(words);
+		
+		total = Integer.toString(englishCheck.getAmount());
 		
 		totalLabel.setText(total);
 		
