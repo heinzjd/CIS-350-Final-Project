@@ -42,13 +42,13 @@ public class EnglishSpellCheck
             e.printStackTrace();
         }
  
-        return content.split("\\t| |\\n|,|;|\\.|\\?|!|-|:|@|\\[|\\]|\\(|\\)|\\{|\\}|_|\\*|/|=");
+        return content.split("\\t| |\\n|,|;|\\.|\\?|!|-|:|@|\\[|\\]|\\(|\\)|\\{|\\}|_|\\*|/|=|\\\"");
     } 
 	
 	
 	public void setText(String t)
 	{
-		input = t.split("\\t| |\\n|,|;|\\.|\\?|!|-|:|@|\\[|\\]|\\(|\\)|\\{|\\}|_|\\*|/|=");
+		input = t.split("\\t| |\\n|,|;|\\.|\\?|!|-|:|@|\\[|\\]|\\(|\\)|\\{|\\}|_|\\*|/|=|\\\"");
 	}
 	
 	public int getAmount()
