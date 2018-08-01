@@ -66,7 +66,7 @@ public class EnglishSpellCheck
 		{
 			for(int j=0; j<dictionary.length; j++)
 			{
-				if(input[i].equals(dictionary[j]))
+				if(input[i].equalsIgnoreCase(dictionary[j]))
 				{
 					flag = false;
 				}
@@ -86,6 +86,4 @@ public class EnglishSpellCheck
 		
 		return incorrect;
 	}
-
-	
 }
