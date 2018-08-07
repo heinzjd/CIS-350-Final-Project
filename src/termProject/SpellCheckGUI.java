@@ -7,9 +7,14 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.FileReader;
-import java.io.FileWriter;
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
@@ -31,6 +36,7 @@ import javax.swing.text.DefaultHighlighter;
 import javax.swing.text.Highlighter;
 import javax.swing.text.Highlighter.HighlightPainter;
 
+
 /***********************************************************************
  * Term Project
  * 
@@ -40,10 +46,11 @@ import javax.swing.text.Highlighter.HighlightPainter;
  * @version 7/14/2018
  **********************************************************************/
 
+@SuppressWarnings("serial")
 public class SpellCheckGUI extends JFrame implements ActionListener
-{
+{	
 	/** Object from EnglishSpellCheck class */
-	EnglishSpellCheck englishCheck;
+	SpellCheck spellCheck;
 
 	/** Spell check button */
 	JButton check;
@@ -62,6 +69,9 @@ public class SpellCheckGUI extends JFrame implements ActionListener
 
 	/** String array to put in JList */
 	String[] words = new String[1000];
+	
+	/** integer for language */
+	int lang = 0;
 
 	/** menu items in each of the menus */
 	private JMenuBar menus;
@@ -71,6 +81,13 @@ public class SpellCheckGUI extends JFrame implements ActionListener
 	private JMenuItem quitItem;
 	private JMenuItem saveItem;
 	private JMenuItem addWordItem;
+
+	private JMenuItem englishItem;
+	private JMenuItem spanishItem;
+	private JMenuItem frenchItem;
+	private JMenuItem italianItem;
+	private JMenuItem germanItem;
+	private JMenuItem norwegianItem;
 	
 
 
@@ -101,6 +118,12 @@ public class SpellCheckGUI extends JFrame implements ActionListener
 		saveItem = new JMenuItem("Save File");
 		//action menu items (languages)
 		addWordItem = new JMenuItem("Add To Dictionary");
+		englishItem = new JMenuItem("English");
+		spanishItem = new JMenuItem("Spanish");
+		frenchItem = new JMenuItem("French");
+		italianItem = new JMenuItem("Italian");
+		germanItem = new JMenuItem("German");
+		norwegianItem = new JMenuItem("Norwegian");
 
 
 		//adding items to menu bar
@@ -110,6 +133,13 @@ public class SpellCheckGUI extends JFrame implements ActionListener
 		fileMenu.add(quitItem);
 		//action  menu items
 		actionMenu.add(addWordItem);
+		actionMenu.addSeparator();
+		actionMenu.add(englishItem);
+		actionMenu.add(spanishItem);
+		actionMenu.add(frenchItem);
+		actionMenu.add(italianItem);
+		actionMenu.add(germanItem);
+		actionMenu.add(norwegianItem);
 
 
 		menus.add(fileMenu);
@@ -120,6 +150,12 @@ public class SpellCheckGUI extends JFrame implements ActionListener
 		saveItem.addActionListener(this);
 		quitItem.addActionListener(this);
 		addWordItem.addActionListener(this);
+		englishItem.addActionListener(this);
+		spanishItem.addActionListener(this);
+		frenchItem.addActionListener(this);
+		italianItem.addActionListener(this);
+		germanItem.addActionListener(this);
+		norwegianItem.addActionListener(this);
 
 		setLayout(new GridBagLayout());
 		GridBagConstraints loc;
@@ -199,6 +235,30 @@ public class SpellCheckGUI extends JFrame implements ActionListener
 		if(addWordItem == e.getSource()){
 			addToDict();
 		}
+		
+		if(englishItem == e.getSource()){
+			lang = 1;
+		}
+		
+		if(spanishItem == e.getSource()){
+			lang = 2;
+		}
+		
+		if(frenchItem == e.getSource()){
+			lang = 3;
+		}
+		
+		if(italianItem == e.getSource()){
+			lang = 4;
+		}
+		
+		if(germanItem == e.getSource()){
+			lang = 5;
+		}
+		
+		if(norwegianItem == e.getSource()){
+			lang = 6;
+		}
 	}
 
 	/***********************************************************
@@ -206,15 +266,19 @@ public class SpellCheckGUI extends JFrame implements ActionListener
 	 **********************************************************/
 	private void checkGUI()
 	{
-		englishCheck = new EnglishSpellCheck();
+		if(lang > 0)
+		spellCheck = new SpellCheck(lang);
+			
+		else
+		spellCheck = new SpellCheck();
 
-		total = Integer.toString(englishCheck.getAmount());
+		total = Integer.toString(spellCheck.getAmount());
 		
 		String t = textArea.getText();
 
-		englishCheck.setText(t);
+		spellCheck.setText(t);
 
-		words = englishCheck.getMisspelled();
+		words = spellCheck.getMisspelled();
 
 		Highlighter highlighter = textArea.getHighlighter();
 		HighlightPainter painter = 
@@ -232,7 +296,7 @@ public class SpellCheckGUI extends JFrame implements ActionListener
 				try {
 					highlighter.addHighlight(pos, pos + words[i].length(), painter);
 				} catch (BadLocationException e) {
-					// TODO Auto-generated catch block
+					//Auto-generated catch block
 					e.printStackTrace();
 				}             
 				pos += words[i].length();
@@ -242,7 +306,7 @@ public class SpellCheckGUI extends JFrame implements ActionListener
 
 		incorrectWords.setListData(words);
 
-		total = Integer.toString(englishCheck.getAmount());
+		total = Integer.toString(spellCheck.getAmount());
 
 		totalLabel.setText(total);
 
@@ -262,7 +326,11 @@ public class SpellCheckGUI extends JFrame implements ActionListener
 			try
 			{
 				String filename = chooser.getSelectedFile().getAbsolutePath();
-				FileReader reader = new FileReader(filename);
+//				FileReader reader = new FileReader(filename);
+				BufferedReader reader = new BufferedReader(
+				        new InputStreamReader(
+				                new FileInputStream(filename), "UTF-8"));
+				
 				textArea.read(reader, filename); //Object of JTextArea
 			}
 			catch(Exception ex)
@@ -270,8 +338,6 @@ public class SpellCheckGUI extends JFrame implements ActionListener
 				//  error message
 			}   
 		}
-
-
 	}
 
 	/*****************************************************************
@@ -287,11 +353,12 @@ public class SpellCheckGUI extends JFrame implements ActionListener
 		if (status == JFileChooser.APPROVE_OPTION) 
 		{
 			String filename = chooser.getSelectedFile().getAbsolutePath();
-			try
-			{
-				FileWriter writer = new FileWriter(filename);
+			
+			Writer fstream = null;
+			try {
+			    fstream = new OutputStreamWriter(new FileOutputStream(filename), StandardCharsets.UTF_8);		
 
-				textArea.write(writer);
+				textArea.write(fstream);
 			}
 			catch(Exception ex)
 			{
@@ -305,10 +372,28 @@ public class SpellCheckGUI extends JFrame implements ActionListener
 	 ****************************************************************/
 	private void addToDict()
 	{
+		String dictFile;
+		switch (lang)
+		{
+		case 1:  dictFile = ("/var/host/media/removable/SD Card/CIS 350/Workspace/CIS 350 Final Project/src/wordBank.txt");
+		break;
+		case 2:  dictFile = ("/var/host/media/removable/SD Card/CIS 350/Workspace/CIS 350 Final Project/src/wordBankSpanish.txt");
+		break;
+		case 3:  dictFile = ("/var/host/media/removable/SD Card/CIS 350/Workspace/CIS 350 Final Project/src/wordBankFrench.txt");
+		break;
+		case 4:  dictFile = ("/var/host/media/removable/SD Card/CIS 350/Workspace/CIS 350 Final Project/src/wordBankItalian.txt");
+		break;
+		case 5:  dictFile = ("/var/host/media/removable/SD Card/CIS 350/Workspace/CIS 350 Final Project/src/wordBankGerman.txt");
+		break;
+		case 6:  dictFile = ("/var/host/media/removable/SD Card/CIS 350/Workspace/CIS 350 Final Project/src/wordBankNorw.txt");
+		break;
+		default: dictFile = ("/var/host/media/removable/SD Card/CIS 350/Workspace/CIS 350 Final Project/src/wordBank.txt");
+		break;
+		}
 		String newWord = JOptionPane.showInputDialog(this, "Enter Word to add:");
 		try {
 		    Files.write(
-		    		Paths.get("/var/host/media/removable/SD Card/CIS 350/Workspace/CIS 350 Final Project/src/wordBank.txt"),
+		    		Paths.get(dictFile),
 		    		newWord.getBytes(), StandardOpenOption.APPEND);
 		}catch (IOException e) {
 		    //exception handling left as an exercise for the reader
